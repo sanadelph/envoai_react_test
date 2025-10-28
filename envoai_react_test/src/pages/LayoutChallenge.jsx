@@ -19,7 +19,8 @@ function LayoutChallenge() {
         </ul>
       </div>
 
-      <div className="messy-layout">
+      {/* <div className="messy-layout"> */}
+      <div className="clean-layout">
         <DataEntryTable />
         <SystemMonitorTable />
       </div>

@@ -13,42 +13,110 @@ function BugHunt() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
 
   useEffect(() => {
-    setCounter(counter + 1)
-  }, [counter])
+    // setCounter(counter + 1); INCORRECT
 
+    /***** EXPLANATION -- BUG 1 *****/
+    // The error "Maximum update depth exceeded" was caused by
+    // the improper state management in useEffect(), when counter
+    // state is updated a new re-render of the component is triggered
+    // causing the useEffect to run again therefore causing an infinite loop
+    // problem is solved by using the state setter function
+    // since the setter function is a constant value there's no need
+    // to add it to the dependencies array
+    setCounter(prevCounter => prevCounter + 1)
+    
+  }, [])
+
+  /***
+   * multiply purchased items' price by their quantity and sum them up to
+   * get the total value
+   * @returns {number} total value of purchased items
+  ***/
   const calculateTotal = () => {
     let total = 0
     for (let i = 0; i < items.length; i++) {
-      total += items[i].price = items[i].quantity
+      // total += items[i].price = items[i].quantity INCORRECT
+      /***** EXPLANATION -- BUG 5 *****/
+
+      // in order to calculate the total value of each item, the quantity
+      // should be MULTIPLIED by the price. Subsequently, this amount
+      // is added to the total value to calculate the final total
+      total += items[i].price * items[i].quantity
     }
     return total
   }
 
+  /***
+   * apply discount value to the total payable amount
+   * @param {number} total value of purchased items
+   * @returns {number} total value of purchased items considering any discount
+  ***/
   const applyDiscount = (total) => {
-    return total + (total * discount)
+    /***** EXPLANATION -- BUG 2 *****/
+
+    // the calculation was not done correctly
+    // in order to apply a discount, the following changes were made:
+    // 1. the discount is divided by 100
+    // 2. total value * discount percentage is subtracted from the total value
+    return total - (total * (discount/100))
   }
 
+  /***
+   * handle login functionality, once logged in update isLoggedIn state to true
+  ***/
   const handleLogin = () => {
     if (username.length < 3) {
       alert('Username must be at least 3 characters')
       return
     }
-    setIsLoggedIn(false)
+    /***** EXPLANATION -- BUG 3 *****/
+  
+    // The state was being updated in the wrong order
+    // once the user enters a username which is at least 3 characters long
+    // the isLoggedIn state should be set to true,
+    // conversely, once the user logs out, the state is set back to false 
+    setIsLoggedIn(true)
   }
 
+  /***
+   * handle logout functionality, once logged in update isLoggedIn state to false
+  ***/
   const handleLogout = () => {
-    setIsLoggedIn(true)
+    setIsLoggedIn(false)
     setUsername('')
   }
 
+  /***
+   * update the quantity of items about to be purchased, in the items state
+   * @param {number} id - id of the modified item
+   * @param {number} newQuantity - updated quantity of the item
+  ***/
   const updateQuantity = (id, newQuantity) => {
     setItems(items.map(item => 
-      item.id === id ? { quantity: newQuantity } : item
+      /***** EXPLANATION -- BUG 4 *****/
+
+      // when the value of quantity gets updated for each item,
+      // the entire item object should be returned, this can be achieved
+      // by using the spread operator to return the rest of the object which
+      // remained unchanged along with the updated properties
+      item.id === id ? { ...item, quantity: newQuantity } : item
     ))
   }
 
+  /***
+   * remove an item from the to be purchased list of items, in the items state
+   * @param {number} id - id of the modified item
+  ***/
   const removeItem = (id) => {
-    setItems(items.filter(item => item.id == id))
+    // setItems(items.filter(item => item.id == id)) INCORRECT
+
+    /***** EXPLANATION -- BUG 6 *****/
+
+    // after removing each item, the items state refers to
+    // every item except the one removed. To achieve this
+    // we use filter() and by looking up their ids in the callback function
+    // we retrieve the updated items 
+    setItems(items.filter(item => item.id !== id))
   }
 
   const total = calculateTotal()
