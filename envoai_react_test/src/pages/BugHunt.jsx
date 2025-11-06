@@ -1,13 +1,10 @@
 import { useState, useEffect } from 'react'
 import './BugHunt.css'
 
+
 function BugHunt() {
   const [counter, setCounter] = useState(0)
-  const [items, setItems] = useState([
-    { id: 1, name: 'Item 1', price: 10, quantity: 1 },
-    { id: 2, name: 'Item 2', price: 20, quantity: 2 },
-    { id: 3, name: 'Item 3', price: 15, quantity: 1 }
-  ])
+  const [items, setItems] = useState([])
   const [discount, setDiscount] = useState(0)
   const [username, setUsername] = useState('')
   const [isLoggedIn, setIsLoggedIn] = useState(false)
@@ -24,8 +21,37 @@ function BugHunt() {
     // since the setter function is a constant value there's no need
     // to add it to the dependencies array
     setCounter(prevCounter => prevCounter + 1)
-    
   }, [])
+
+  useEffect(() => {
+    // this array which holds initial items
+    const initialItems = [
+      { id: 1, name: 'Item 1', price: 10, quantity: 1 },
+      { id: 2, name: 'Item 2', price: 20, quantity: 2 },
+      { id: 3, name: 'Item 3', price: 15, quantity: 1 }
+    ]
+
+    // retrieve "items" from local storage
+    const savedItems = localStorage.getItem('items')
+    if (savedItems) {
+      try {
+        setItems(JSON.parse(savedItems))
+      } catch (error) {
+        console.error('Error loading data:', error)
+      }
+    }
+    // if there are no "items" stored in local storage
+    // set initialItems as "items"
+    else {
+      localStorage.setItem('items', JSON.stringify(initialItems))
+    }
+  }, [])
+
+  // useEffect(() => {
+  //   if (items.length > 0) {
+  //     localStorage.setItem('items', JSON.stringify(initialItems))
+  //   }
+  // }, [items])
 
   /***
    * multiply purchased items' price by their quantity and sum them up to
@@ -92,15 +118,21 @@ function BugHunt() {
    * @param {number} newQuantity - updated quantity of the item
   ***/
   const updateQuantity = (id, newQuantity) => {
-    setItems(items.map(item => 
-      /***** EXPLANATION -- BUG 4 *****/
+    //   /***** EXPLANATION -- BUG 4 *****/
 
-      // when the value of quantity gets updated for each item,
-      // the entire item object should be returned, this can be achieved
-      // by using the spread operator to return the rest of the object which
-      // remained unchanged along with the updated properties
-      item.id === id ? { ...item, quantity: newQuantity } : item
-    ))
+    //   // when the value of quantity gets updated for each item,
+    //   // the entire item object should be returned, this can be achieved
+    //   // by using the spread operator to return the rest of the object which
+    //   // remained unchanged along with the updated properties
+    setItems(prev => {
+      const updated = prev.map(item => item.id === id ? { ...item, quantity: newQuantity } : item)
+      localStorage.setItem('items', JSON.stringify(updated))
+      return updated
+    })
+
+    // setItems(items.map(item => 
+    //   item.id === id ? { ...item, quantity: newQuantity } : item
+    // ))
   }
 
   /***
@@ -108,15 +140,19 @@ function BugHunt() {
    * @param {number} id - id of the modified item
   ***/
   const removeItem = (id) => {
-    // setItems(items.filter(item => item.id == id)) INCORRECT
-
     /***** EXPLANATION -- BUG 6 *****/
 
     // after removing each item, the items state refers to
     // every item except the one removed. To achieve this
     // we use filter() and by looking up their ids in the callback function
-    // we retrieve the updated items 
-    setItems(items.filter(item => item.id !== id))
+    // we retrieve the updated items
+    setItems(prev => {
+      const updated = prev.filter(item => item.id !== id)
+      localStorage.setItem('items', JSON.stringify(updated))
+      return updated
+    })
+
+    // setItems(items.filter(item => item.id !== id))
   }
 
   const total = calculateTotal()

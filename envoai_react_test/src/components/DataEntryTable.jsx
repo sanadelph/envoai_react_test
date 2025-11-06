@@ -106,7 +106,7 @@ function DataEntryTable() {
               placeholder=""
             />
             <span className='label'>Name </span>
-            <span className='focus-bg'></span>
+            {/* <span className='focus-bg'></span> */}
           </label>
 
             <label htmlFor="email" className='input-wrapper'>
@@ -119,7 +119,7 @@ function DataEntryTable() {
                 placeholder=""
               />
               <span className='label'>Email </span>
-              <span className='focus-bg'></span>
+              {/* <span className='focus-bg'></span> */}
             </label>
 
             <label htmlFor="department" className='input-wrapper'>
@@ -132,7 +132,7 @@ function DataEntryTable() {
                 placeholder=""
               />
               <span className='label'>Department </span>
-              <span className='focus-bg'></span>
+              {/* <span className='focus-bg'></span> */}
             </label>
 
             <label htmlFor="phone" className='input-wrapper'>
@@ -145,7 +145,7 @@ function DataEntryTable() {
                 placeholder=""
               />
               <span className='label'>Phone</span>
-              <span className='focus-bg'></span>
+              {/* <span className='focus-bg'></span> */}
             </label>
           <button type="submit">Add Entry</button>
       </form>

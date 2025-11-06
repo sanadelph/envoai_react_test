@@ -62,7 +62,7 @@
   pointer-events: none;
 }
 
-.input-wrapper focus-bg {
+/* .input-wrapper .focus-bg {
   position: absolute;
   top: 0;
   left: 0;
@@ -72,7 +72,7 @@
   z-index: -1;
   transform: scaleX(0);
   transform-origin: left;
-}
+} */
 
 .input-wrapper input {
   -webkit-appearance: none;
